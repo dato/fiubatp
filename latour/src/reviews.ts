@@ -26,8 +26,8 @@ export async function assignReview(context: Context): Promise<void> {
     const { reviewers } = config
     const key = repo.name
 
-    // TODO: learn better Typescript syntax for dicts.
     if (key in reviewers) {
+        // TODO: avoid performing the API call if reviewer is already assigned.
         const reviewer = reviewers[key]
         const params = context.issue({ reviewers: [reviewer] })
         const result = await context.github.pulls.createReviewRequest(params)
@@ -57,7 +57,7 @@ export async function fixTitle(context: Context): Promise<void> {
     //  Comprobar si el título ya es correcto, o solo difiere en puntuación.
     // Si no es correcto, aplicar una expresión regular para más o menos extraer
     // el nombre de la entrega, y (si lo hay) el apellido.
-    const goodTitle: RegExp = /^\[(?:algo2|orga|sisop)\] [a-z0-9]+ (?<guion>.) \S+$/
+    const goodTitle: RegExp = /^\[(?:algo2|orga|sisop)\] [a-z0-9]+ (?<guion>.) +.+$/
     const looseTitle: RegExp = /^(?:\[\w+\] *)?(?<tp>\w+)(?:(?: *\W+ *)?(?<name>\S+))?/
     const titleGood = goodTitle.exec(pr.title)
     const titleBad = looseTitle.exec(pr.title)
